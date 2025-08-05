@@ -33,11 +33,13 @@ struct WinapiFunc<ReturnType WINAPI(Args...)> final {
 
     inline WinapiFunc(LPCTSTR dll, LPCSTR func)
         : m_hLib(LoadLibrary(dll))
-        , m_pWinapiFunc(reinterpret_cast<WinapiFuncType>(GetProcAddress(m_hLib, func))) {
+        , m_pWinapiFunc(m_hLib ? reinterpret_cast<WinapiFuncType>(GetProcAddress(m_hLib, func)) : nullptr) {
     }
 
     inline ~WinapiFunc() {
-        FreeLibrary(m_hLib);
+        if (m_hLib) {
+            FreeLibrary(m_hLib);
+        }
     }
 
     inline explicit operator bool() const {
